@@ -31,6 +31,18 @@
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
         </dependency>
+
+        <!-- jedis -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+
+        <!--   ai-comm   -->
+        <dependency>
+            <groupId>com.icode.rich</groupId>
+            <artifactId>ai-comm</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

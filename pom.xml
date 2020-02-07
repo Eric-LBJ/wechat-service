@@ -55,6 +55,7 @@
     <commons-codec.version>1.11</commons-codec.version>
     <curator.version>2.13.0</curator.version>
     <seata.version>0.9.0</seata.version>
+    <jedis.version>2.9.0</jedis.version>
   </properties>
 
   <dependencyManagement>
@@ -228,6 +229,15 @@
         <groupId>com.github.tobato</groupId>
         <artifactId>fastdfs-client</artifactId>
         <version>${fastDFS.version}</version>
+      </dependency>
+
+      <!-- jedis -->
+      <dependency>
+        <groupId>redis.clients</groupId>
+        <artifactId>jedis</artifactId>
+        <version>${jedis.version}</version>
+        <type>jar</type>
+        <scope>compile</scope>
       </dependency>
 
       <!-- 二维码 -->

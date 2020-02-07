@@ -83,6 +83,12 @@
             <groupId>com.icode.rich</groupId>
             <artifactId>ai-comm</artifactId>
         </dependency>
+
+        <!-- jedis -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
