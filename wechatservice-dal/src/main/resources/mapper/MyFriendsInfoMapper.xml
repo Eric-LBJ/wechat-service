@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.corereach.communication.dal.mapper.MyFriendsInfoMapper">
+    <resultMap id="BaseResultMap" type="com.corereach.communication.dal.domain.MyFriendsInfo">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
+        <result column="my_user_id" jdbcType="VARCHAR" property="myUserId"/>
+        <result column="my_friend_user_id" jdbcType="VARCHAR" property="myFriendUserId"/>
+        <result column="is_deleted" jdbcType="BIGINT" property="isDeleted"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from my_friends_info
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.corereach.communication.dal.domain.MyFriendsInfo">
+    insert into my_friends_info (id, gmt_create, gmt_modified, 
+      my_user_id, my_friend_user_id, is_deleted
+      )
+    values (#{id,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
+      #{myUserId,jdbcType=VARCHAR}, #{myFriendUserId,jdbcType=VARCHAR}, #{isDeleted,jdbcType=BIGINT}
+      )
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="com.corereach.communication.dal.domain.MyFriendsInfo">
+    update my_friends_info
+    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+      my_user_id = #{myUserId,jdbcType=VARCHAR},
+      my_friend_user_id = #{myFriendUserId,jdbcType=VARCHAR},
+      is_deleted = #{isDeleted,jdbcType=BIGINT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, gmt_create, gmt_modified, my_user_id, my_friend_user_id, is_deleted
+    from my_friends_info
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, gmt_create, gmt_modified, my_user_id, my_friend_user_id, is_deleted
+    from my_friends_info
+  </select>
+    <select id="selectMyFriendsInfoByUserId" resultType="com.corereach.communication.dal.domain.MyFriendsInfo">
+       select id, gmt_create, gmt_modified, my_user_id, my_friend_user_id, is_deleted
+       from my_friends_info
+       where my_user_id = #{myUserId,jdbcType=VARCHAR} and my_friend_user_id = #{myFriendUserId,jdbcType=VARCHAR} and is_deleted = 0
+    </select>
+</mapper>

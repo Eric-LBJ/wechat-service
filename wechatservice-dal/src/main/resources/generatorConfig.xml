@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <classPathEntry location="E:\Company\maven\MavenRepository\mysql\mysql-connector-java\5.1.18\mysql-connector-java-5.1.18.jar" />
+
+    <context id="wechat" targetRuntime="MyBatis3Simple">
+
+        <commentGenerator>
+            <property name="suppressAllComments" value="true" />
+        </commentGenerator>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://192.168.171.128:3306/wechat-dev"
+                        userId="root"
+                        password="Root@20200202">
+        </jdbcConnection>
+
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="com.corereach.communication.dal.domain"
+							targetProject="F:\myGitLocalRepository\wechat-service\wechatservice-dal\src\main\java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="mapper"
+						 targetProject="F:\myGitLocalRepository\wechat-service\wechatservice-dal\src\main\resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <javaClientGenerator targetPackage="com.corereach.communication.dal.mapper"
+                             targetProject="F:\myGitLocalRepository\wechat-service\wechatservice-dal\src\main\java" type="XMLMAPPER">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        <table schema="wechat-dev" tableName="chat_msg_info" domainObjectName="ChatMsgInfo" >
+            <property name="useActualColumnNames" value="false"/>
+        </table>
+
+        <table schema="wechat-dev" tableName="friends_request_info" domainObjectName="FriendsRequestInfo" >
+            <property name="useActualColumnNames" value="false"/>
+        </table>
+
+        <table schema="wechat-dev" tableName="my_friends_info" domainObjectName="MyFriendsInfo" >
+            <property name="useActualColumnNames" value="false"/>
+        </table>
+
+        <table schema="wechat-dev" tableName="user_info" domainObjectName="userInfo" >
+            <property name="useActualColumnNames" value="false"/>
+        </table>
+
+    </context>
+</generatorConfiguration>
