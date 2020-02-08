@@ -24,7 +24,7 @@ import javax.annotation.Resource;
  * @Date 2019/12/23 14:56
  * @Version V1.0
  **/
-@Service("userService")
+@Service("userInfoService")
 public class UserInfoServiceImpl extends ServiceSupport implements UserInfoService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserInfoServiceImpl.class);
