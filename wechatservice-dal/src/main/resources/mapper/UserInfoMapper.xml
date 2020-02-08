@@ -1,62 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.corereach.communication.dal.mapper.UserInfoMapper">
-  <resultMap id="BaseResultMap" type="com.corereach.communication.dal.domain.UserInfo">
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
-    <result column="username" jdbcType="VARCHAR" property="username" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
-    <result column="face_image" jdbcType="VARCHAR" property="faceImage" />
-    <result column="face_image_big" jdbcType="VARCHAR" property="faceImageBig" />
-    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
-    <result column="qrcode" jdbcType="VARCHAR" property="qrcode" />
-    <result column="cid" jdbcType="VARCHAR" property="cid" />
-    <result column="is_deleted" jdbcType="BIGINT" property="isDeleted" />
-  </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    delete from user_info
-    where id = #{id,jdbcType=VARCHAR}
-  </delete>
-  <insert id="insert" parameterType="com.corereach.communication.dal.domain.UserInfo">
-    insert into user_info (id, gmt_create, gmt_modified, 
-      username, password, face_image, 
-      face_image_big, nick_name, qrcode, 
-      cid, is_deleted)
-    values (#{id,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
-      #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{faceImage,jdbcType=VARCHAR}, 
-      #{faceImageBig,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}, #{qrcode,jdbcType=VARCHAR}, 
-      #{cid,jdbcType=VARCHAR}, #{isDeleted,jdbcType=BIGINT})
-  </insert>
-  <update id="updateByPrimaryKey" parameterType="com.corereach.communication.dal.domain.UserInfo">
-    update user_info
-    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
-      username = #{username,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR},
-      face_image = #{faceImage,jdbcType=VARCHAR},
-      face_image_big = #{faceImageBig,jdbcType=VARCHAR},
-      nick_name = #{nickName,jdbcType=VARCHAR},
-      qrcode = #{qrcode,jdbcType=VARCHAR},
-      cid = #{cid,jdbcType=VARCHAR},
-      is_deleted = #{isDeleted,jdbcType=BIGINT}
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select id, gmt_create, gmt_modified, username, password, face_image, face_image_big, 
-    nick_name, qrcode, cid, is_deleted
-    from user_info
-    where id = #{id,jdbcType=VARCHAR}
-  </select>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select id, gmt_create, gmt_modified, username, password, face_image, face_image_big, 
-    nick_name, qrcode, cid, is_deleted
-    from user_info
-  </select>
+    <resultMap id="BaseResultMap" type="com.corereach.communication.dal.domain.UserInfo">
+      <id column="id" jdbcType="VARCHAR" property="id" />
+      <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+      <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
+      <result column="username" jdbcType="VARCHAR" property="username" />
+      <result column="password" jdbcType="VARCHAR" property="password" />
+      <result column="face_image" jdbcType="VARCHAR" property="faceImage" />
+      <result column="face_image_big" jdbcType="VARCHAR" property="faceImageBig" />
+      <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+      <result column="qrcode" jdbcType="VARCHAR" property="qrcode" />
+      <result column="cid" jdbcType="VARCHAR" property="cid" />
+      <result column="is_deleted" jdbcType="BIGINT" property="isDeleted" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.corereach.communication.dal.domain.UserInfo">
+      insert into user_info (id, gmt_create, gmt_modified,
+        username, password, face_image,
+        face_image_big, nick_name, qrcode,
+        cid, is_deleted)
+      values (#{id,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP},
+        #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{faceImage,jdbcType=VARCHAR},
+        #{faceImageBig,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}, #{qrcode,jdbcType=VARCHAR},
+        #{cid,jdbcType=VARCHAR}, #{isDeleted,jdbcType=BIGINT})
+    </insert>
+
+    <update id="updateByUserId" parameterType="com.corereach.communication.dal.domain.UserInfo">
+      update user_info
+      set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+        username = #{username,jdbcType=VARCHAR},
+        password = #{password,jdbcType=VARCHAR},
+        face_image = #{faceImage,jdbcType=VARCHAR},
+        face_image_big = #{faceImageBig,jdbcType=VARCHAR},
+        nick_name = #{nickName,jdbcType=VARCHAR},
+        qrcode = #{qrcode,jdbcType=VARCHAR},
+        cid = #{cid,jdbcType=VARCHAR},
+        is_deleted = #{isDeleted,jdbcType=BIGINT}
+      where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+      select id, gmt_create, gmt_modified, username, password, face_image, face_image_big,
+      nick_name, qrcode, cid, is_deleted
+      from user_info
+      where id = #{id,jdbcType=VARCHAR}
+    </select>
+
     <select id="selectUserInfoByUsername" resultType="com.corereach.communication.dal.domain.UserInfo">
       select id, gmt_create, gmt_modified, username, password, face_image, face_image_big,
       nick_name, qrcode, cid, is_deleted
       from user_info
       where username = #{username,jdbcType=VARCHAR} and  is_deleted = 0
+    </select>
+
+  <select id="selectUserInfoByUsernameAndPassWord"
+          resultType="com.corereach.communication.dal.domain.UserInfo">
+      select id, gmt_create, gmt_modified, username, password, face_image, face_image_big,
+        nick_name, qrcode, cid, is_deleted
+        from user_info
+        where username = #{username,jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR} and  is_deleted = 0
     </select>
 </mapper>

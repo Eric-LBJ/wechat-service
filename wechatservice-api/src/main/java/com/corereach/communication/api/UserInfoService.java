@@ -35,7 +35,7 @@ public interface UserInfoService {
      * @param user 用户信息
      * @return AiResult<FrontUserInfoVO>
      */
-    AiResult<FrontUserInfoVO> registerOrLogin(UserInfoVO user);
+    AiResult<String> registerOrLogin(UserInfoVO user);
 
     /**
      * 校验用户名和密码

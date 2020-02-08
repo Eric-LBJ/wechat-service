@@ -1,12 +1,13 @@
 package com.corereach.communication.component.impl;
 
+import cn.hutool.core.lang.ObjectId;
+import cn.hutool.core.util.IdUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.corereach.communication.common.comm.ChatCode;
 import com.corereach.communication.common.comm.Constants;
 import com.corereach.communication.common.domain.UserInfoDTO;
-import com.corereach.communication.common.utils.ConvertUtil;
-import com.corereach.communication.common.utils.FastDFSClient;
-import com.corereach.communication.common.utils.FileUtils;
-import com.corereach.communication.common.utils.QRCodeUtils;
+import com.corereach.communication.common.utils.*;
+import com.corereach.communication.component.RedisComponent;
 import com.corereach.communication.component.UserInfoComponent;
 import com.corereach.communication.dal.domain.MyFriendsInfo;
 import com.corereach.communication.dal.domain.UserInfo;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * @Description: TODO
@@ -44,101 +46,113 @@ public class UserInfoComponentImpl implements UserInfoComponent {
     @Resource
     private FastDFSClient fastDfsClient;
 
+    @Resource
+    private RedisComponent redisComponent;
+
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Exception.class)
     public UserInfoDTO getUserInfoByUserId(String userId) {
-//        return ConvertUtil.convertDomain(UserInfoDTO.class,
-//                Optional.ofNullable(userInfoMapper.selectByPrimaryKey(userId)).orElse(new UserInfo()));
-        return null;
+        return ConvertUtil.convertDomain(UserInfoDTO.class,
+                Optional.ofNullable(userInfoMapper.selectByUserId(userId)).orElse(new UserInfo()));
     }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Exception.class)
     public Boolean usernameIsExist(String username) {
-//        UserInfo info = new UserInfo();
-//        info.setUsername(username);
-//        info.setIsDeleted(Constants.IS_DELETED_FALSE);
-//        UserInfo userInfo = userInfoMapper.selectOne(info);
-//        return !ObjectUtils.isEmpty(userInfo) && !StringUtils.isEmpty(userInfo.getUsername());
-        return null;
+        UserInfo userInfo = userInfoMapper.selectUserInfoByUsername(username);
+        return !ObjectUtils.isEmpty(userInfo) && !StringUtils.isEmpty(userInfo.getUsername());
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public UserInfoDTO registerOrLogin(UserInfoDTO userInfoDTO) {
+    public String registerOrLogin(UserInfoDTO userInfoDTO) {
         /**
          * 判断用户是否存在，如果存在则走登录流程，如果不存在则走注册流程
          */
-        UserInfoDTO result;
-        if (usernameIsExist(userInfoDTO.getUsername())) {
-            result = checkPassword(userInfoDTO.getUsername(), userInfoDTO.getPassword());
+        UserInfoDTO user;
+        UserInfo userInfo = userInfoMapper.selectUserInfoByUsername(userInfoDTO.getUsername());
+        if (!ObjectUtils.isEmpty(userInfo) && !StringUtils.isEmpty(userInfo.getId())) {
+            UserInfo userInfoWithPassword = userInfoMapper
+                    .selectUserInfoByUsernameAndPassWord(userInfoDTO.getUsername(), Md5Util.getMd5Str(userInfoDTO.getPassword()));
+            if (ObjectUtils.isEmpty(userInfo) || StringUtils.isEmpty(userInfo.getId())) {
+                throw new AiException(Constants.isGlobal, ChatCode.PASSWORD_ERROR);
+            }
+            user = ConvertUtil.convertDomain(UserInfoDTO.class, userInfoWithPassword);
+
         } else {
-            result = insertUser(userInfoDTO);
+            user = insertUser(userInfoDTO);
         }
-        return result;
+
+        /**
+         * 获取到用户信息后将用户信息缓存到redis，解决分布式应用用户信息存储问题
+         */
+        String onLineKey = userInfoDTO.getUsername() + Constants.ISOLATION + Constants.LOGIN_SIGN + Constants.ISOLATION
+                + Constants.ON_LINE + Constants.ISOLATION;
+        String token = IdUtil.simpleUUID();
+        String tokenKey = token + Constants.ISOLATION + Constants.ISOLATION + Constants.ISOLATION;
+        Boolean setOnLineKey = redisComponent.set(onLineKey, token, Constants.TOKEN_EXPIRES_TIME);
+        Boolean setTokenKey = redisComponent.set(tokenKey, JSONObject.toJSONString(user), Constants.TOKEN_EXPIRES_TIME);
+        if (!(setOnLineKey && setTokenKey)) {
+            throw new AiException(Constants.isGlobal, ChatCode.USER_LOGIN_FAILURE);
+        }
+        return token;
     }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Exception.class)
     public UserInfoDTO checkPassword(String username, String password) {
-//        Example userExample = new Example(UserInfo.class);
-//        Example.Criteria criteria = userExample.createCriteria();
-//        criteria.andEqualTo("username", username);
-//        criteria.andEqualTo("password", Md5Util.getMd5Str(password));
-//        UserInfo userInfo = Optional.ofNullable(userInfoMapper.selectOneByExample(userExample)).orElse(new UserInfo());
-//        if (ObjectUtils.isEmpty(userInfo) || StringUtils.isEmpty(userInfo.getId())) {
-//            throw new AiException(Constants.isGlobal, ChatCode.USERNAME_OR_PASSWORD_ERROR);
-//        }
-//        return ConvertUtil.convertDomain(UserInfoDTO.class, userInfo);
-        return null;
+        UserInfo userInfo = Optional
+                .ofNullable(userInfoMapper.selectUserInfoByUsernameAndPassWord(username, Md5Util.getMd5Str(password))).orElse(new UserInfo());
+        if (ObjectUtils.isEmpty(userInfo) || StringUtils.isEmpty(userInfo.getId())) {
+            throw new AiException(Constants.isGlobal, ChatCode.USERNAME_OR_PASSWORD_ERROR);
+        }
+        return ConvertUtil.convertDomain(UserInfoDTO.class, userInfo);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public UserInfoDTO insertUser(UserInfoDTO userInfoDTO) {
-//        String id = sid.nextShort();
-//        userInfoDTO.setNickName(userInfoDTO.getUsername());
-//        userInfoDTO.setFaceImage("");
-//        userInfoDTO.setFaceImageBig("");
-//        userInfoDTO.setPassword(Md5Util.getMd5Str(userInfoDTO.getPassword()));
-//        userInfoDTO.setId(id);
-//        userInfoDTO.setIsDeleted(0L);
-//        userInfoDTO.setQrcode(getQrCode(userInfoDTO));
-//        if (userInfoMapper.insert(ConvertUtil.convertDomain(UserInfo.class, userInfoDTO)) <= 0) {
-//            throw new AiException(Constants.isGlobal, ChatCode.USER_REGISTER_FAILURE);
-//        }
-//        return userInfoDTO;
-        return null;
+        userInfoDTO.setNickName(userInfoDTO.getUsername());
+        userInfoDTO.setFaceImage("");
+        userInfoDTO.setFaceImageBig("");
+        userInfoDTO.setPassword(Md5Util.getMd5Str(userInfoDTO.getPassword()));
+        userInfoDTO.setId(getUniqueUserId());
+        userInfoDTO.setIsDeleted(Constants.IS_DELETED_FALSE);
+        userInfoDTO.setQrcode(getQrCode(userInfoDTO));
+        if (userInfoMapper.insert(ConvertUtil.convertDomain(UserInfo.class, userInfoDTO)) <= 0) {
+            throw new AiException(Constants.isGlobal, ChatCode.USER_REGISTER_FAILURE);
+        }
+        return userInfoDTO;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public UserInfoDTO updateUserInfo(UserInfoDTO userInfoDTO) {
         /**更新前先判断用户是否存在*/
-//        if (!userInfoMapper.existsWithPrimaryKey(userInfoDTO.getId())) {
-//            throw new AiException(Constants.isGlobal, ChatCode.USER_NOT_EXIST);
-//        }
-//
-//        /**如果用户头像数据不为空，将用户头像数据上传到fastDFS服务器*/
-//        if (!StringUtils.isEmpty(userInfoDTO.getFaceData())) {
-//            setFaceImage(userInfoDTO);
-//            if (StringUtils.isEmpty(userInfoDTO.getFaceImage()) || StringUtils.isEmpty(userInfoDTO.getFaceImageBig())) {
-//                throw new AiException(Constants.isGlobal, ChatCode.FACE_IMAGE_UPLOAD_FAILURE);
-//            }
-//        }
-//
-//        /**更新用户信息并返回更新后的用户信息*/
-//        UserInfo result = new UserInfo();
-//        if (userInfoMapper.updateByPrimaryKeySelective(ConvertUtil.convertDomain(UserInfo.class, userInfoDTO)) > 0) {
-//            result = userInfoMapper.selectByPrimaryKey(userInfoDTO.getId());
-//        }
-//
-//        /**未更新成功，抛出异常*/
-//        if (ObjectUtils.isEmpty(result) || StringUtils.isEmpty(result.getId())) {
-//            throw new AiException(Constants.isGlobal, ChatCode.USER_INFO_UPDATE_FAILURE);
-//        }
-//        return ConvertUtil.convertDomain(UserInfoDTO.class, result);
-        return null;
+        UserInfo userInfo = userInfoMapper.selectByUserId(userInfoDTO.getId());
+        if (ObjectUtils.isEmpty(userInfo) || StringUtils.isEmpty(userInfo.getId())) {
+            throw new AiException(Constants.isGlobal, ChatCode.USER_NOT_EXIST);
+        }
+
+        /**如果用户头像数据不为空，将用户头像数据上传到fastDFS服务器*/
+        if (!StringUtils.isEmpty(userInfoDTO.getFaceData())) {
+            setFaceImage(userInfoDTO);
+            if (StringUtils.isEmpty(userInfoDTO.getFaceImage()) || StringUtils.isEmpty(userInfoDTO.getFaceImageBig())) {
+                throw new AiException(Constants.isGlobal, ChatCode.FACE_IMAGE_UPLOAD_FAILURE);
+            }
+        }
+
+        /**更新用户信息并返回更新后的用户信息*/
+        UserInfo result = new UserInfo();
+        if (userInfoMapper.updateByUserId(ConvertUtil.convertDomain(UserInfo.class, userInfoDTO)) > 0) {
+            result = userInfoMapper.selectByUserId(userInfoDTO.getId());
+        }
+
+        /**未更新成功，抛出异常*/
+        if (ObjectUtils.isEmpty(result) || StringUtils.isEmpty(result.getId())) {
+            throw new AiException(Constants.isGlobal, ChatCode.USER_INFO_UPDATE_FAILURE);
+        }
+        return ConvertUtil.convertDomain(UserInfoDTO.class, result);
     }
 
     @Override
@@ -152,14 +166,14 @@ public class UserInfoComponentImpl implements UserInfoComponent {
         if (ObjectUtils.isEmpty(userInfo) || StringUtils.isEmpty(userInfo.getId())) {
             throw new AiException(Constants.isGlobal, ChatCode.USER_INFO_NOT_EXIST);
         }
-        if (myUserId.equals(userInfo.getId())){
+        if (myUserId.equals(userInfo.getId())) {
             throw new AiException(Constants.isGlobal, ChatCode.USER_IS_YOURSELF);
         }
-        MyFriendsInfo myFriendsInfo = myFriendsInfoMapper.selectMyFriendsInfoByUserId(myUserId,userInfo.getId());
+        MyFriendsInfo myFriendsInfo = myFriendsInfoMapper.selectMyFriendsInfoByUserId(myUserId, userInfo.getId());
         if (!ObjectUtils.isEmpty(myFriendsInfo) && !StringUtils.isEmpty(myFriendsInfo.getId())) {
             throw new AiException(Constants.isGlobal, ChatCode.USER_IS_ALREADY_YOUR_FRIEND);
         }
-        return ConvertUtil.convertDomain(UserInfoDTO.class,userInfo);
+        return ConvertUtil.convertDomain(UserInfoDTO.class, userInfo);
     }
 
     private void setFaceImage(UserInfoDTO user) {
@@ -203,6 +217,19 @@ public class UserInfoComponentImpl implements UserInfoComponent {
             e.printStackTrace();
         }
         return result;
+    }
+
+    private String getUniqueUserId() {
+        Boolean flag = Boolean.TRUE;
+        String userId = null;
+        while (flag) {
+            userId = ObjectId.next();
+            UserInfo userInfo = userInfoMapper.selectByUserId(userId);
+            if (!ObjectUtils.isEmpty(userInfo)) {
+                flag = Boolean.FALSE;
+            }
+        }
+        return userId;
     }
 
 }

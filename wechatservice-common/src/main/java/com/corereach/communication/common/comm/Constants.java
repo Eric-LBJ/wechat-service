@@ -13,18 +13,6 @@ public class Constants {
      */
     public static Boolean isGlobal = Boolean.FALSE;
     /**
-     * netty服务端口
-     */
-    public static final Integer SERVER_PORT = 8088;
-    /**
-     * http请求或响应最大长度
-     */
-    public static final Integer MAX_CONTENT_LENGTH = 65536;
-    /**
-     * webSocket路由地址
-     */
-    public static final String WEB_SOCKET_PATH = "/ws";
-    /**
      * 缩略图尾缀
      */
     public static final String THUMP = "_80x80.";
@@ -60,5 +48,21 @@ public class Constants {
      * 是否删除：否
      */
     public static final Long IS_DELETED_FALSE = 0L;
+    /**
+     * 隔离符
+     */
+    public static final String ISOLATION = "|";
+    /**
+     * 登录标识
+     */
+    public static final String LOGIN_SIGN = "weChat";
+    /**
+     * 在线
+     */
+    public static final String ON_LINE = "onLine";
+    /**
+     * token失效时间：永不过期
+     */
+    public static final Integer TOKEN_EXPIRES_TIME = -1;
 
 }

@@ -43,7 +43,7 @@ public class UserInfoServiceImpl extends ServiceSupport implements UserInfoServi
     }
 
     @Override
-    public AiResult<FrontUserInfoVO> registerOrLogin(UserInfoVO user) {
+    public AiResult<String> registerOrLogin(UserInfoVO user) {
         /**
          * 数据校验
          */
@@ -55,9 +55,7 @@ public class UserInfoServiceImpl extends ServiceSupport implements UserInfoServi
                 .notBlank("密码", user.getPassword())
                 .checkLength("密码", user.getPassword(), 1, 64);
         try {
-            UserInfoVO userInfoVO =
-                    ConvertUtil.convertDomain(UserInfoVO.class, userInfoComponent.registerOrLogin(ConvertUtil.convertDomain(UserInfoDTO.class, user)));
-            return new AiResult<>(Constants.isGlobal, ConvertUtil.convertDomain(FrontUserInfoVO.class, userInfoVO));
+            return new AiResult<>(Constants.isGlobal, userInfoComponent.registerOrLogin(ConvertUtil.convertDomain(UserInfoDTO.class, user)));
         } catch (AiException e) {
             LOGGER.error(e.getMessage(), e);
             return new AiResult<>(Constants.isGlobal, e.getCode(), e.getMessage(), e.getLocalizedMessage());
