@@ -21,7 +21,7 @@ public class RedisComponentTest extends WeChatApplicationTests {
 
     @Test
     public void selectByPrimaryKeyTest() {
-        String result = redisComponent.get("GOODSKEY_GS_1");
+        String result = redisComponent.get("01000a39789b4cf99d947870149a86e4|||");
         System.out.println(result);
     }
 

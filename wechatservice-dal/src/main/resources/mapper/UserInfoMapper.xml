@@ -14,6 +14,11 @@
       <result column="cid" jdbcType="VARCHAR" property="cid" />
       <result column="is_deleted" jdbcType="BIGINT" property="isDeleted" />
     </resultMap>
+    
+    <sql id="columns">
+        id, gmt_create, gmt_modified, username, password, face_image, face_image_big,
+        nick_name, qrcode, cid, is_deleted
+    </sql>
 
     <insert id="insert" parameterType="com.corereach.communication.dal.domain.UserInfo">
       insert into user_info (id, gmt_create, gmt_modified,
@@ -42,24 +47,15 @@
     </update>
 
     <select id="selectByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
-      select id, gmt_create, gmt_modified, username, password, face_image, face_image_big,
-      nick_name, qrcode, cid, is_deleted
-      from user_info
-      where id = #{id,jdbcType=VARCHAR}
+      select <include refid="columns"/> from user_info where id = #{id,jdbcType=VARCHAR}
     </select>
 
-    <select id="selectUserInfoByUsername" resultType="com.corereach.communication.dal.domain.UserInfo">
-      select id, gmt_create, gmt_modified, username, password, face_image, face_image_big,
-      nick_name, qrcode, cid, is_deleted
-      from user_info
-      where username = #{username,jdbcType=VARCHAR} and  is_deleted = 0
+    <select id="selectUserInfoByUsername" resultMap="BaseResultMap">
+      select <include refid="columns"/> from user_info where username = #{username,jdbcType=VARCHAR} and  is_deleted = 0
     </select>
 
-  <select id="selectUserInfoByUsernameAndPassWord"
-          resultType="com.corereach.communication.dal.domain.UserInfo">
-      select id, gmt_create, gmt_modified, username, password, face_image, face_image_big,
-        nick_name, qrcode, cid, is_deleted
-        from user_info
-        where username = #{username,jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR} and  is_deleted = 0
+    <select id="selectUserInfoByUsernameAndPassWord" resultMap="BaseResultMap">
+      select <include refid="columns"/> from user_info
+      where username = #{username,jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR} and  is_deleted = 0
     </select>
 </mapper>

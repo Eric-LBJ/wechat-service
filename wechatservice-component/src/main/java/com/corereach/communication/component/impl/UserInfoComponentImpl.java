@@ -74,7 +74,7 @@ public class UserInfoComponentImpl implements UserInfoComponent {
         if (!ObjectUtils.isEmpty(userInfo) && !StringUtils.isEmpty(userInfo.getId())) {
             UserInfo userInfoWithPassword = userInfoMapper
                     .selectUserInfoByUsernameAndPassWord(userInfoDTO.getUsername(), Md5Util.getMd5Str(userInfoDTO.getPassword()));
-            if (ObjectUtils.isEmpty(userInfo) || StringUtils.isEmpty(userInfo.getId())) {
+            if (ObjectUtils.isEmpty(userInfoWithPassword) || StringUtils.isEmpty(userInfoWithPassword.getId())) {
                 throw new AiException(Constants.isGlobal, ChatCode.PASSWORD_ERROR);
             }
             user = ConvertUtil.convertDomain(UserInfoDTO.class, userInfoWithPassword);
