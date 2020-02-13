@@ -1,6 +1,7 @@
 package com.corereach.communication.dal.mapper;
 
 import com.corereach.communication.dal.domain.MyFriendsInfo;
+import com.corereach.communication.dal.domain.UserInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -52,4 +53,11 @@ public interface MyFriendsInfoMapper {
      * @return MyFriendsInfo
      */
     MyFriendsInfo selectMyFriendsInfoByUserId(@Param("myUserId") String myUserId, @Param("myFriendUserId") String myFriendUserId);
+
+    /**
+     * 获取我的好友的用户信息
+     * @param myUserId 我的用户编号
+     * @return List
+     */
+    List<UserInfo> listUserInfoWithFriendsInfo(@Param("myUserId") String myUserId);
 }

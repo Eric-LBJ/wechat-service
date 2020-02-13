@@ -3,15 +3,19 @@ package com.corereach.communication.component.impl;
 import cn.hutool.core.lang.ObjectId;
 import com.corereach.communication.common.comm.Constants;
 import com.corereach.communication.common.domain.MyFriendsInfoDTO;
+import com.corereach.communication.common.domain.UserInfoDTO;
 import com.corereach.communication.common.utils.ConvertUtil;
 import com.corereach.communication.component.MyFriendsInfoComponent;
 import com.corereach.communication.dal.domain.MyFriendsInfo;
+import com.corereach.communication.dal.domain.UserInfo;
 import com.corereach.communication.dal.mapper.MyFriendsInfoMapper;
 import com.icode.rich.comm.ServiceSupport;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,6 +42,14 @@ public class MyFriendsInfoComponentImpl extends ServiceSupport implements MyFrie
         MyFriendsInfo myFriendsInfo = Optional
                 .ofNullable(myFriendsInfoMapper.selectMyFriendsInfoByUserId(myUserId, myFriendUserId)).orElse(new MyFriendsInfo());
         return ConvertUtil.convertDomain(MyFriendsInfoDTO.class,myFriendsInfo);
+    }
+
+    @Override
+    public List<UserInfoDTO> listUserInfoWithFriendsInfo(String myUserId) {
+        List<UserInfo> userInfoList = Optional.ofNullable(myFriendsInfoMapper.listUserInfoWithFriendsInfo(myUserId)).orElse(new ArrayList<>());
+        List<UserInfoDTO> userInfoDTOList = new ArrayList<>();
+        userInfoList.forEach(item -> userInfoDTOList.add(ConvertUtil.convertDomain(UserInfoDTO.class,item)));
+        return userInfoDTOList;
     }
 
     private String getUniqueId() {

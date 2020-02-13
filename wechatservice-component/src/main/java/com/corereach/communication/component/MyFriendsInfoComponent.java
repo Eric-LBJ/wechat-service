@@ -1,6 +1,9 @@
 package com.corereach.communication.component;
 
 import com.corereach.communication.common.domain.MyFriendsInfoDTO;
+import com.corereach.communication.common.domain.UserInfoDTO;
+
+import java.util.List;
 
 /**
  * @Description: TODO
@@ -26,5 +29,12 @@ public interface MyFriendsInfoComponent {
      * @return MyFriendsInfo
      */
     MyFriendsInfoDTO selectMyFriendsInfoByUserId(String myUserId, String myFriendUserId);
+
+    /**
+     * 获取我的好友的用户信息
+     * @param myUserId 我的用户编号
+     * @return List
+     */
+    List<UserInfoDTO> listUserInfoWithFriendsInfo(String myUserId);
 
 }

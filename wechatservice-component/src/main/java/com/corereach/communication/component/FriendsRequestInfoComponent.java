@@ -46,5 +46,5 @@ public interface FriendsRequestInfoComponent {
      * @param operatorType 操作类型 0-忽略，1-通过
      * @return Boolean
      */
-    Boolean passOrIgnoreRequest(String sendUserId, String acceptUserId, Integer operatorType);
+    List<UserInfoDTO> passOrIgnoreRequest(String sendUserId, String acceptUserId, Integer operatorType);
 }

@@ -93,7 +93,7 @@ public class FriendsRequestInfoComponentImpl extends ServiceSupport implements F
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Boolean passOrIgnoreRequest(String sendUserId, String acceptUserId, Integer operatorType) {
+    public List<UserInfoDTO> passOrIgnoreRequest(String sendUserId, String acceptUserId, Integer operatorType) {
         Boolean result = Boolean.FALSE;
         if (Constants.OPERATOR_TYPE_OF_PASS.equals(operatorType)) {
             /**
@@ -103,8 +103,9 @@ public class FriendsRequestInfoComponentImpl extends ServiceSupport implements F
              */
             Boolean insertFirst = myFriendsInfoComponent.insert(packageMyFriendInfo(sendUserId, acceptUserId));
             Boolean insertSecond = myFriendsInfoComponent.insert(packageMyFriendInfo(acceptUserId, sendUserId));
-            if (insertFirst && insertSecond) {
-                result = friendsRequestInfoMapper.deleteFriendsRequestInfo(sendUserId, acceptUserId) > 0;
+            Integer isDeleted = friendsRequestInfoMapper.deleteFriendsRequestInfo(sendUserId, acceptUserId);
+            if (insertFirst && insertSecond && isDeleted > 0) {
+                result = Boolean.TRUE;
             }
         } else if (Constants.OPERATOR_TYPE_OF_IGNORE.equals(operatorType)) {
             /**
@@ -112,7 +113,12 @@ public class FriendsRequestInfoComponentImpl extends ServiceSupport implements F
              */
             result = friendsRequestInfoMapper.deleteFriendsRequestInfo(sendUserId, acceptUserId) > 0;
         }
-        return result;
+
+        if (!result){
+            throw new AiException(Constants.isGlobal,ChatCode.OPERATOR_FAILURE);
+        }
+
+        return myFriendsInfoComponent.listUserInfoWithFriendsInfo(acceptUserId);
     }
 
     private String getUniqueId() {

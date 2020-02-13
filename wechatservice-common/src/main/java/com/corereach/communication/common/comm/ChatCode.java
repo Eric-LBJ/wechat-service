@@ -29,4 +29,5 @@ public class ChatCode {
      * user : 500400-500799
      */
     public static final AiCode ADD_FRIEND_REQUEST_ALREADY_EXIST = new AiCode(500401, "You've already sent the user a friend request", "您已经向该用户发送过好友请求了，请耐心等待");;
+    public static final AiCode OPERATOR_FAILURE = new AiCode(500402, "Operator failure", "操作失败");
 }

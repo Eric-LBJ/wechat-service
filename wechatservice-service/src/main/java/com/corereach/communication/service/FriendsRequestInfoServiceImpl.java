@@ -65,13 +65,7 @@ public class FriendsRequestInfoServiceImpl extends ServiceSupport implements Fri
                 .notBlank("用户编号", myUserId)
                 .checkLength("用户编号", myUserId, 1, 64);
         try {
-            List<UserInfoDTO> userInfoDTOList = friendsRequestInfoComponent.listUserInfoWithRequestInfo(myUserId);
-            List<UserInfoVO> userInfoVOList = new ArrayList<>();
-            userInfoDTOList.forEach(item -> userInfoVOList.add(ConvertUtil.convertDomain(UserInfoVO.class, item)));
-            RangeQueryResult<UserInfoVO> result = new RangeQueryResult<>();
-            result.setData(userInfoVOList);
-            result.setTotalNum((long) userInfoVOList.size());
-            return new AiResult<>(Constants.isGlobal, result);
+            return new AiResult<>(Constants.isGlobal, packageResult(friendsRequestInfoComponent.listUserInfoWithRequestInfo(myUserId)));
         } catch (AiException e) {
             LOGGER.error(e.getMessage(), e);
             return new AiResult<>(Constants.isGlobal, e.getCode(), e.getMessage(), e.getLocalizedMessage());
@@ -82,7 +76,7 @@ public class FriendsRequestInfoServiceImpl extends ServiceSupport implements Fri
     }
 
     @Override
-    public AiResult<Boolean> passOrIgnoreRequest(String sendUserId, String acceptUserId, Integer operatorType) {
+    public AiResult<RangeQueryResult<UserInfoVO>> passOrIgnoreRequest(String sendUserId, String acceptUserId, Integer operatorType) {
         /**
          * 数据校验
          */
@@ -95,7 +89,8 @@ public class FriendsRequestInfoServiceImpl extends ServiceSupport implements Fri
                 .notNull("操作类型", operatorType)
                 .checkEnums("操作类型", operatorType, Constants.OPERATOR_TYPE_LIST);
         try {
-            return new AiResult<>(Constants.isGlobal, friendsRequestInfoComponent.passOrIgnoreRequest(sendUserId,acceptUserId,operatorType));
+            return new AiResult<>(Constants.isGlobal,
+                    packageResult(friendsRequestInfoComponent.passOrIgnoreRequest(sendUserId, acceptUserId, operatorType)));
         } catch (AiException e) {
             LOGGER.error(e.getMessage(), e);
             return new AiResult<>(Constants.isGlobal, e.getCode(), e.getMessage(), e.getLocalizedMessage());
@@ -103,5 +98,14 @@ public class FriendsRequestInfoServiceImpl extends ServiceSupport implements Fri
             LOGGER.error(e.getMessage(), e);
             return new AiResult<>(Constants.isGlobal, AiCodes.SYSTEM_ERROR);
         }
+    }
+
+    private RangeQueryResult<UserInfoVO> packageResult(List<UserInfoDTO> userInfoDTOList) {
+        RangeQueryResult<UserInfoVO> result = new RangeQueryResult<>();
+        List<UserInfoVO> userInfoVOList = new ArrayList<>();
+        userInfoDTOList.forEach(item -> userInfoVOList.add(ConvertUtil.convertDomain(UserInfoVO.class, item)));
+        result.setData(userInfoVOList);
+        result.setTotalNum((long) userInfoVOList.size());
+        return result;
     }
 }

@@ -37,6 +37,6 @@ public interface FriendsRequestInfoService {
      * @param operatorType 操作类型 0-忽略，1-通过
      * @return Boolean
      */
-    AiResult<Boolean> passOrIgnoreRequest(String sendUserId,String acceptUserId,Integer operatorType);
+    AiResult<RangeQueryResult<UserInfoVO>> passOrIgnoreRequest(String sendUserId,String acceptUserId,Integer operatorType);
 
 }
