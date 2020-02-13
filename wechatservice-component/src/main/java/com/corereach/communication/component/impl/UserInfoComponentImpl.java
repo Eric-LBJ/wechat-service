@@ -136,23 +136,30 @@ public class UserInfoComponentImpl implements UserInfoComponent {
 
         /**如果用户头像数据不为空，将用户头像数据上传到fastDFS服务器*/
         if (!StringUtils.isEmpty(userInfoDTO.getFaceData())) {
-            setFaceImage(userInfoDTO);
+            setFaceImage(userInfoDTO,userInfo);
             if (StringUtils.isEmpty(userInfoDTO.getFaceImage()) || StringUtils.isEmpty(userInfoDTO.getFaceImageBig())) {
                 throw new AiException(Constants.isGlobal, ChatCode.FACE_IMAGE_UPLOAD_FAILURE);
             }
         }
-
-        /**更新用户信息并返回更新后的用户信息*/
-        UserInfo result = new UserInfo();
-        if (userInfoMapper.updateByUserId(ConvertUtil.convertDomain(UserInfo.class, userInfoDTO)) > 0) {
-            result = userInfoMapper.selectByUserId(userInfoDTO.getId());
+        if (!StringUtils.isEmpty(userInfoDTO.getNickName())){
+            userInfo.setNickName(userInfoDTO.getNickName());
         }
 
         /**未更新成功，抛出异常*/
-        if (ObjectUtils.isEmpty(result) || StringUtils.isEmpty(result.getId())) {
+        if (userInfoMapper.updateByUserId(userInfo) <= 0) {
             throw new AiException(Constants.isGlobal, ChatCode.USER_INFO_UPDATE_FAILURE);
         }
-        return ConvertUtil.convertDomain(UserInfoDTO.class, result);
+
+        /**更新用户信息后需要将缓存的用户信息也更细，并返回更新后的用户信息*/
+        String onLineKey = userInfo.getUsername() + Constants.ISOLATION + Constants.LOGIN_SIGN + Constants.ISOLATION
+                + Constants.ON_LINE + Constants.ISOLATION;
+        String token = redisComponent.get(onLineKey);
+        String tokenKey = token + Constants.ISOLATION + Constants.ISOLATION + Constants.ISOLATION;
+        Boolean setTokenKey = redisComponent.set(tokenKey, JSONObject.toJSONString(userInfo), Constants.TOKEN_EXPIRES_TIME);
+        if (!setTokenKey){
+            throw new AiException(Constants.isGlobal, ChatCode.REDIS_USER_INFO_UPDATE_FAILURE);
+        }
+        return ConvertUtil.convertDomain(UserInfoDTO.class, userInfo);
     }
 
     @Override
@@ -176,7 +183,7 @@ public class UserInfoComponentImpl implements UserInfoComponent {
         return ConvertUtil.convertDomain(UserInfoDTO.class, userInfo);
     }
 
-    private void setFaceImage(UserInfoDTO user) {
+    private void setFaceImage(UserInfoDTO user,UserInfo userInfo) {
         try {
             /**获取前端传来的base64字符串转换成文件上传*/
             String base64Data = user.getFaceData();
@@ -192,8 +199,8 @@ public class UserInfoComponentImpl implements UserInfoComponent {
             String[] arr = url.split(Constants.SPILT_BASE);
             String thumpImgUrl = arr[0] + Constants.THUMP + arr[1];
 
-            user.setFaceImage(thumpImgUrl);
-            user.setFaceImageBig(url);
+            userInfo.setFaceImage(thumpImgUrl);
+            userInfo.setFaceImageBig(url);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -23,4 +23,6 @@ public class ChatCode {
     public static final AiCode USER_IS_ALREADY_YOUR_FRIEND = new AiCode(500107, "The user is already your friends", "您所搜索的用户已经是您的好友了，不能重复添加哦");
     public static final AiCode USER_LOGIN_FAILURE = new AiCode(500108, "The user login failure", "登录失败");
     public static final AiCode USERNAME_OR_PASSWORD_ERROR = new AiCode(500109, "The username or password error", "用户名或密码错误");
+    public static final AiCode REDIS_USER_INFO_UPDATE_FAILURE = new AiCode(500110, "The user in redis info update failure", "用户信息缓存修改失败");
+
 }
