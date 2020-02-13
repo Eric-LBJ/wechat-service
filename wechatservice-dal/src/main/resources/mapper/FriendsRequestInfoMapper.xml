@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.corereach.communication.dal.mapper.FriendsRequestInfoMapper">
-  <resultMap id="BaseResultMap" type="com.corereach.communication.dal.domain.FriendsRequestInfo">
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
-    <result column="send_user_id" jdbcType="VARCHAR" property="sendUserId" />
-    <result column="accept_user_id" jdbcType="VARCHAR" property="acceptUserId" />
-    <result column="request_date_time" jdbcType="TIMESTAMP" property="requestDateTime" />
-    <result column="is_deleted" jdbcType="BIGINT" property="isDeleted" />
-  </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    delete from friends_request_info
-    where id = #{id,jdbcType=VARCHAR}
-  </delete>
-  <insert id="insert" parameterType="com.corereach.communication.dal.domain.FriendsRequestInfo">
+    <resultMap id="BaseResultMap" type="com.corereach.communication.dal.domain.FriendsRequestInfo">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
+        <result column="send_user_id" jdbcType="VARCHAR" property="sendUserId"/>
+        <result column="accept_user_id" jdbcType="VARCHAR" property="acceptUserId"/>
+        <result column="request_date_time" jdbcType="TIMESTAMP" property="requestDateTime"/>
+        <result column="is_deleted" jdbcType="BIGINT" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="columns">
+    id, gmt_create, gmt_modified, send_user_id, accept_user_id, request_date_time,
+    is_deleted
+  </sql>
+
+    <insert id="insert" parameterType="com.corereach.communication.dal.domain.FriendsRequestInfo">
     insert into friends_request_info (id, gmt_create, gmt_modified, 
       send_user_id, accept_user_id, request_date_time, 
       is_deleted)
@@ -22,25 +24,36 @@
       #{sendUserId,jdbcType=VARCHAR}, #{acceptUserId,jdbcType=VARCHAR}, #{requestDateTime,jdbcType=TIMESTAMP}, 
       #{isDeleted,jdbcType=BIGINT})
   </insert>
-  <update id="updateByPrimaryKey" parameterType="com.corereach.communication.dal.domain.FriendsRequestInfo">
-    update friends_request_info
-    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
-      send_user_id = #{sendUserId,jdbcType=VARCHAR},
-      accept_user_id = #{acceptUserId,jdbcType=VARCHAR},
-      request_date_time = #{requestDateTime,jdbcType=TIMESTAMP},
-      is_deleted = #{isDeleted,jdbcType=BIGINT}
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select id, gmt_create, gmt_modified, send_user_id, accept_user_id, request_date_time, 
-    is_deleted
-    from friends_request_info
-    where id = #{id,jdbcType=VARCHAR}
+
+    <select id="selectBySendAndAcceptUserId" resultMap="BaseResultMap">
+        select
+        <include refid="columns"/>
+        from friends_request_info
+        where send_user_id = #{sendUserId,jdbcType=VARCHAR} and accept_user_id = #{acceptUserId,jdbcType=VARCHAR} and
+        is_deleted = 0
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select
+        <include refid="columns"/>
+        from friends_request_info where id = #{id,jdbcType=VARCHAR} and is_deleted = 0
+    </select>
+
+    <select id="listUserInfoWithRequestInfo"
+            resultMap="com.corereach.communication.dal.mapper.UserInfoMapper.BaseResultMap">
+    select ui.id, ui.username, ui.face_image, ui.nick_name from friends_request_info fri
+    left join user_info ui
+    on ui.id = fri.send_user_id
+    and ui.is_deleted = 0
+    where fri.accept_user_id = #{myUserId,jdbcType=VARCHAR} and fri.is_deleted = 0
   </select>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select id, gmt_create, gmt_modified, send_user_id, accept_user_id, request_date_time, 
-    is_deleted
-    from friends_request_info
-  </select>
+
+    <update id="deleteFriendsRequestInfo">
+        update friends_request_info
+        set is_deleted = UNIX_TIMESTAMP(now()),
+        gmt_modified = now()
+        where send_user_id = #{sendUserId,jdbcType=VARCHAR} and accept_user_id = #{acceptUserId,jdbcType=VARCHAR} and
+        is_deleted = 0
+    </update>
+
 </mapper>

@@ -5,8 +5,10 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.corereach.communication.common.comm.ChatCode;
 import com.corereach.communication.common.comm.Constants;
+import com.corereach.communication.common.domain.MyFriendsInfoDTO;
 import com.corereach.communication.common.domain.UserInfoDTO;
 import com.corereach.communication.common.utils.*;
+import com.corereach.communication.component.MyFriendsInfoComponent;
 import com.corereach.communication.component.RedisComponent;
 import com.corereach.communication.component.UserInfoComponent;
 import com.corereach.communication.dal.domain.MyFriendsInfo;
@@ -38,7 +40,7 @@ public class UserInfoComponentImpl implements UserInfoComponent {
     private UserInfoMapper userInfoMapper;
 
     @Resource
-    private MyFriendsInfoMapper myFriendsInfoMapper;
+    private MyFriendsInfoComponent myFriendsInfoComponent;
 
     @Resource
     private QRCodeUtils qrCodeUtils;
@@ -176,14 +178,20 @@ public class UserInfoComponentImpl implements UserInfoComponent {
         if (myUserId.equals(userInfo.getId())) {
             throw new AiException(Constants.isGlobal, ChatCode.USER_IS_YOURSELF);
         }
-        MyFriendsInfo myFriendsInfo = myFriendsInfoMapper.selectMyFriendsInfoByUserId(myUserId, userInfo.getId());
-        if (!ObjectUtils.isEmpty(myFriendsInfo) && !StringUtils.isEmpty(myFriendsInfo.getId())) {
+        MyFriendsInfoDTO myFriendsInfoDTO = myFriendsInfoComponent.selectMyFriendsInfoByUserId(myUserId, userInfo.getId());
+        if (!ObjectUtils.isEmpty(myFriendsInfoDTO) && !StringUtils.isEmpty(myFriendsInfoDTO.getId())) {
             throw new AiException(Constants.isGlobal, ChatCode.USER_IS_ALREADY_YOUR_FRIEND);
         }
         return ConvertUtil.convertDomain(UserInfoDTO.class, userInfo);
     }
 
-    private void setFaceImage(UserInfoDTO user,UserInfo userInfo) {
+    @Override
+    public UserInfoDTO getUserInfoByUsername(String username) {
+        return ConvertUtil.convertDomain(UserInfoDTO.class,
+                Optional.ofNullable(userInfoMapper.selectUserInfoByUsername(username)).orElse(new UserInfo()));
+    }
+
+    private void setFaceImage(UserInfoDTO user, UserInfo userInfo) {
         try {
             /**获取前端传来的base64字符串转换成文件上传*/
             String base64Data = user.getFaceData();
@@ -232,7 +240,7 @@ public class UserInfoComponentImpl implements UserInfoComponent {
         while (flag) {
             userId = ObjectId.next();
             UserInfo userInfo = userInfoMapper.selectByUserId(userId);
-            if (!ObjectUtils.isEmpty(userInfo)) {
+            if (ObjectUtils.isEmpty(userInfo)) {
                 flag = Boolean.FALSE;
             }
         }

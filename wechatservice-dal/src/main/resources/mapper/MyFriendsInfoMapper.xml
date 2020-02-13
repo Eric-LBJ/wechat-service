@@ -9,36 +9,31 @@
         <result column="my_friend_user_id" jdbcType="VARCHAR" property="myFriendUserId"/>
         <result column="is_deleted" jdbcType="BIGINT" property="isDeleted"/>
     </resultMap>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    delete from my_friends_info
-    where id = #{id,jdbcType=VARCHAR}
-  </delete>
+        delete from my_friends_info
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+
     <insert id="insert" parameterType="com.corereach.communication.dal.domain.MyFriendsInfo">
-    insert into my_friends_info (id, gmt_create, gmt_modified, 
-      my_user_id, my_friend_user_id, is_deleted
-      )
-    values (#{id,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
-      #{myUserId,jdbcType=VARCHAR}, #{myFriendUserId,jdbcType=VARCHAR}, #{isDeleted,jdbcType=BIGINT}
-      )
-  </insert>
-    <update id="updateByPrimaryKey" parameterType="com.corereach.communication.dal.domain.MyFriendsInfo">
-    update my_friends_info
-    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
-      my_user_id = #{myUserId,jdbcType=VARCHAR},
-      my_friend_user_id = #{myFriendUserId,jdbcType=VARCHAR},
-      is_deleted = #{isDeleted,jdbcType=BIGINT}
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
+        insert into my_friends_info (id, gmt_create, gmt_modified,
+          my_user_id, my_friend_user_id, is_deleted
+          )
+        values (#{id,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP},
+          #{myUserId,jdbcType=VARCHAR}, #{myFriendUserId,jdbcType=VARCHAR}, #{isDeleted,jdbcType=BIGINT})
+    </insert>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select id, gmt_create, gmt_modified, my_user_id, my_friend_user_id, is_deleted
-    from my_friends_info
-    where id = #{id,jdbcType=VARCHAR}
-  </select>
+        select id, gmt_create, gmt_modified, my_user_id, my_friend_user_id, is_deleted
+        from my_friends_info
+        where id = #{id,jdbcType=VARCHAR}
+     </select>
+
     <select id="selectAll" resultMap="BaseResultMap">
-    select id, gmt_create, gmt_modified, my_user_id, my_friend_user_id, is_deleted
-    from my_friends_info
-  </select>
+        select id, gmt_create, gmt_modified, my_user_id, my_friend_user_id, is_deleted
+        from my_friends_info
+    </select>
+
     <select id="selectMyFriendsInfoByUserId" resultType="com.corereach.communication.dal.domain.MyFriendsInfo">
        select id, gmt_create, gmt_modified, my_user_id, my_friend_user_id, is_deleted
        from my_friends_info

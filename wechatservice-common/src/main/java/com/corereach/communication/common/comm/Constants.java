@@ -1,5 +1,8 @@
 package com.corereach.communication.common.comm;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @Description: TODO
  * @Author ga.zhang
@@ -64,5 +67,17 @@ public class Constants {
      * token失效时间：永不过期
      */
     public static final Integer TOKEN_EXPIRES_TIME = -1;
+    /**
+     * 操作类型 0-忽略，1-通过
+     */
+    public static final List<Integer> OPERATOR_TYPE_LIST = Arrays.asList(0, 1);
+    /**
+     * 操作类型 0-忽略
+     */
+    public static final Integer OPERATOR_TYPE_OF_IGNORE = 0;
+    /**
+     * 操作类型 1-通过
+     */
+    public static final Integer OPERATOR_TYPE_OF_PASS = 1;
 
 }

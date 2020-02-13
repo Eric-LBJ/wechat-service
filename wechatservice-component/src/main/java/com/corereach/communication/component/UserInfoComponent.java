@@ -67,4 +67,12 @@ public interface UserInfoComponent {
      * @return UserInfoDTO
      */
     UserInfoDTO searchUserInfoByUserName(String myUserId, String friendUsername);
+
+    /**
+     * 根据用户编号获取用户信息
+     *
+     * @param username 用户名
+     * @return UserInfoDTO
+     */
+    UserInfoDTO getUserInfoByUsername(String username);
 }

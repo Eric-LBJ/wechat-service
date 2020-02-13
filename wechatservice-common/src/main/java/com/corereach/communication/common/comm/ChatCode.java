@@ -25,4 +25,8 @@ public class ChatCode {
     public static final AiCode USERNAME_OR_PASSWORD_ERROR = new AiCode(500109, "The username or password error", "用户名或密码错误");
     public static final AiCode REDIS_USER_INFO_UPDATE_FAILURE = new AiCode(500110, "The user in redis info update failure", "用户信息缓存修改失败");
 
+    /**
+     * user : 500400-500799
+     */
+    public static final AiCode ADD_FRIEND_REQUEST_ALREADY_EXIST = new AiCode(500401, "You've already sent the user a friend request", "您已经向该用户发送过好友请求了，请耐心等待");;
 }
