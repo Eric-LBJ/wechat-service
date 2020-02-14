@@ -17,13 +17,13 @@
   </sql>
 
     <insert id="insert" parameterType="com.corereach.communication.dal.domain.FriendsRequestInfo">
-    insert into friends_request_info (id, gmt_create, gmt_modified, 
-      send_user_id, accept_user_id, request_date_time, 
-      is_deleted)
-    values (#{id,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
-      #{sendUserId,jdbcType=VARCHAR}, #{acceptUserId,jdbcType=VARCHAR}, #{requestDateTime,jdbcType=TIMESTAMP}, 
-      #{isDeleted,jdbcType=BIGINT})
-  </insert>
+        insert into friends_request_info (id, gmt_create, gmt_modified,
+          send_user_id, accept_user_id, request_date_time,
+          is_deleted)
+        values (#{id,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP},
+          #{sendUserId,jdbcType=VARCHAR}, #{acceptUserId,jdbcType=VARCHAR}, #{requestDateTime,jdbcType=TIMESTAMP},
+          #{isDeleted,jdbcType=BIGINT})
+    </insert>
 
     <select id="selectBySendAndAcceptUserId" resultMap="BaseResultMap">
         select
@@ -41,12 +41,12 @@
 
     <select id="listUserInfoWithRequestInfo"
             resultMap="com.corereach.communication.dal.mapper.UserInfoMapper.BaseResultMap">
-    select ui.id, ui.username, ui.face_image, ui.nick_name from friends_request_info fri
-    left join user_info ui
-    on ui.id = fri.send_user_id
-    and ui.is_deleted = 0
-    where fri.accept_user_id = #{myUserId,jdbcType=VARCHAR} and fri.is_deleted = 0
-  </select>
+        select ui.id, ui.username, ui.face_image, ui.nick_name from friends_request_info fri
+        left join user_info ui
+        on ui.id = fri.send_user_id
+        and ui.is_deleted = 0
+        where fri.accept_user_id = #{myUserId,jdbcType=VARCHAR} and fri.is_deleted = 0
+    </select>
 
     <update id="deleteFriendsRequestInfo">
         update friends_request_info

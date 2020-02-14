@@ -18,4 +18,5 @@
     <dubbo:service interface="com.corereach.communication.api.UserInfoService" ref="userInfoService" version="1.0"/>
     <dubbo:service interface="com.corereach.communication.api.RedisService" ref="redisService" version="1.0"/>
     <dubbo:service interface="com.corereach.communication.api.FriendsRequestInfoService" ref="friendsRequestInfoService" version="1.0"/>
+    <dubbo:service interface="com.corereach.communication.api.MyFriendsInfoService" ref="myFriendsInfoService" version="1.0"/>
 </beans>

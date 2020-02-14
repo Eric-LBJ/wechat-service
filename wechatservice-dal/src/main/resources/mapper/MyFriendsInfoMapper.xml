@@ -40,8 +40,10 @@
        where my_user_id = #{myUserId,jdbcType=VARCHAR} and my_friend_user_id = #{myFriendUserId,jdbcType=VARCHAR} and is_deleted = 0
     </select>
 
-    <select id="listUserInfoWithFriendsInfo" resultMap="com.corereach.communication.dal.mapper.UserInfoMapper.BaseResultMap">
-        select * from my_friends_info mfi
+    <select id="listUserInfoWithFriendsInfo"
+            resultMap="com.corereach.communication.dal.mapper.UserInfoMapper.BaseResultMap">
+        select ui.id, ui.username, ui.face_image, ui.face_image_big,
+        ui.nick_name, ui.qrcode, ui.cid from my_friends_info mfi
         left join user_info ui
         on mfi.my_friend_user_id = ui.id
         and ui.is_deleted = 0

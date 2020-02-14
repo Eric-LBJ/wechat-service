@@ -28,7 +28,7 @@ import java.util.List;
 @Service("friendsRequestInfoService")
 public class FriendsRequestInfoServiceImpl extends ServiceSupport implements FriendsRequestInfoService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserInfoServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FriendsRequestInfoServiceImpl.class);
 
     @Resource
     private FriendsRequestInfoComponent friendsRequestInfoComponent;
