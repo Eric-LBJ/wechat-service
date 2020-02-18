@@ -68,7 +68,7 @@ public class WebSocketChatHandler extends SimpleChannelInboundHandler<TextWebSoc
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
-        /**发生异常后先关闭channel，再将channel从ChannelGroup中移除*/
+        /**发生异常后先关闭channel，再将channel从ChannelGroup中移除 */
         ctx.close();
         users.remove(ctx.channel());
     }
