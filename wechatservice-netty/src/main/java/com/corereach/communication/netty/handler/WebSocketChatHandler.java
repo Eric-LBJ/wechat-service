@@ -26,7 +26,7 @@ public class WebSocketChatHandler extends SimpleChannelInboundHandler<TextWebSoc
     /**
      * 用于记录和管理所有客户端的channel
      */
-    private static ChannelGroup clients = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private static ChannelGroup users = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) {
@@ -34,7 +34,7 @@ public class WebSocketChatHandler extends SimpleChannelInboundHandler<TextWebSoc
         String text = msg.text();
         log.info("接收到的数据：{}", text);
         /*这里的消息不能是别的类型，只能是TextWebSocketFrame，因为SimpleChannelInboundHandler需要的是TextWebSocketFrame的内容*/
-        clients.writeAndFlush(new TextWebSocketFrame("服务端在:" + LocalDateTime.now() + "收到消息,收到的消息为:" + text));
+        users.writeAndFlush(new TextWebSocketFrame("服务端在:" + LocalDateTime.now() + "收到消息,收到的消息为:" + text));
     }
 
     /**
@@ -45,7 +45,7 @@ public class WebSocketChatHandler extends SimpleChannelInboundHandler<TextWebSoc
      */
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        clients.add(ctx.channel());
+        users.add(ctx.channel());
         super.handlerAdded(ctx);
     }
 
@@ -63,5 +63,13 @@ public class WebSocketChatHandler extends SimpleChannelInboundHandler<TextWebSoc
         log.info("{}:已经离开", ctx.channel().id().asLongText());
         log.info("{}:已经离开", ctx.channel().id().asShortText());
         super.handlerRemoved(ctx);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+        /**发生异常后先关闭channel，再将channel从ChannelGroup中移除*/
+        ctx.close();
+        users.remove(ctx.channel());
     }
 }
