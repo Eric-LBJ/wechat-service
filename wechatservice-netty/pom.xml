@@ -29,6 +29,16 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>com.corereach.communication</groupId>
+            <artifactId>wechatservice-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.corereach.communication</groupId>
+            <artifactId>wechatservice-component</artifactId>
+        </dependency>
+
         <!-- netty -->
         <dependency>
             <groupId>io.netty</groupId>
@@ -45,11 +55,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web-services</artifactId>
         </dependency>
 
     </dependencies>

@@ -79,5 +79,25 @@ public class Constants {
      * 操作类型 1-通过
      */
     public static final Integer OPERATOR_TYPE_OF_PASS = 1;
+    /**
+     * 发送消息的动作枚举:1-初始化连接
+     */
+    public static final Integer MESSAGE_ACTION_OF_CONNECT = 1;
+    /**
+     * 发送消息的动作枚举:2-聊天消息
+     */
+    public static final Integer MESSAGE_ACTION_OF_CHAT = 2;
+    /**
+     * 发送消息的动作枚举:3-消息签收
+     */
+    public static final Integer MESSAGE_ACTION_OF_SIGNED = 3;
+    /**
+     * 发送消息的动作枚举:4-心跳
+     */
+    public static final Integer MESSAGE_ACTION_OF_KEEPALIVE = 4;
+    /**
+     * 发送消息的动作枚举:5-拉取好友
+     */
+    public static final Integer MESSAGE_ACTION_OF_PULL_FRIEND = 5;
 
 }

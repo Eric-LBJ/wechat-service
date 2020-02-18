@@ -1,48 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.corereach.communication.dal.mapper.ChatMsgInfoMapper">
-  <resultMap id="BaseResultMap" type="com.corereach.communication.dal.domain.ChatMsgInfo">
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
-    <result column="send_user_id" jdbcType="VARCHAR" property="sendUserId" />
-    <result column="accept_user_id" jdbcType="VARCHAR" property="acceptUserId" />
-    <result column="msg" jdbcType="VARCHAR" property="msg" />
-    <result column="sign_flag" jdbcType="INTEGER" property="signFlag" />
-    <result column="is_deleted" jdbcType="BIGINT" property="isDeleted" />
-  </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    delete from chat_msg_info
-    where id = #{id,jdbcType=VARCHAR}
-  </delete>
-  <insert id="insert" parameterType="com.corereach.communication.dal.domain.ChatMsgInfo">
-    insert into chat_msg_info (id, gmt_create, gmt_modified, 
-      send_user_id, accept_user_id, msg, 
-      sign_flag, is_deleted)
-    values (#{id,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
-      #{sendUserId,jdbcType=VARCHAR}, #{acceptUserId,jdbcType=VARCHAR}, #{msg,jdbcType=VARCHAR}, 
-      #{signFlag,jdbcType=INTEGER}, #{isDeleted,jdbcType=BIGINT})
-  </insert>
-  <update id="updateByPrimaryKey" parameterType="com.corereach.communication.dal.domain.ChatMsgInfo">
-    update chat_msg_info
-    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
-      send_user_id = #{sendUserId,jdbcType=VARCHAR},
-      accept_user_id = #{acceptUserId,jdbcType=VARCHAR},
-      msg = #{msg,jdbcType=VARCHAR},
-      sign_flag = #{signFlag,jdbcType=INTEGER},
-      is_deleted = #{isDeleted,jdbcType=BIGINT}
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select id, gmt_create, gmt_modified, send_user_id, accept_user_id, msg, sign_flag, 
-    is_deleted
-    from chat_msg_info
-    where id = #{id,jdbcType=VARCHAR}
-  </select>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select id, gmt_create, gmt_modified, send_user_id, accept_user_id, msg, sign_flag, 
-    is_deleted
-    from chat_msg_info
-  </select>
+    <resultMap id="BaseResultMap" type="com.corereach.communication.dal.domain.ChatMsgInfo">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
+        <result column="send_user_id" jdbcType="VARCHAR" property="sendUserId"/>
+        <result column="accept_user_id" jdbcType="VARCHAR" property="acceptUserId"/>
+        <result column="msg" jdbcType="VARCHAR" property="msg"/>
+        <result column="sign_flag" jdbcType="INTEGER" property="signFlag"/>
+        <result column="is_deleted" jdbcType="BIGINT" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="columns">
+      chat_msg_info (id, gmt_create, gmt_modified, send_user_id, accept_user_id, msg, sign_flag, is_deleted
+    </sql>
+
+    <insert id="insert" parameterType="com.corereach.communication.dal.domain.ChatMsgInfo">
+      insert into chat_msg_info (id, gmt_create, gmt_modified,
+        send_user_id, accept_user_id, msg,
+        sign_flag, is_deleted)
+      values (#{id,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP},
+        #{sendUserId,jdbcType=VARCHAR}, #{acceptUserId,jdbcType=VARCHAR}, #{msg,jdbcType=VARCHAR},
+        0, 0)
+    </insert>
+
+    <update id="updateChatMsgInfoToSignedByMessageId">
+      update chat_msg_info
+      set gmt_modified = now(),sign_flag = 1
+        where
+        is_deleted = 0
+        and id in
+        <foreach collection="messageIdList" close=")" index="index" item="messageId" open="(" separator=",">
+          #{messageId,jdbcType=VARCHAR}
+      </foreach>
+    </update>
+
+    <select id="getChatMsgInfoById" resultMap="BaseResultMap">
+      select <include refid="columns"/> from chat_msg_info
+      where id = #{id,jdbcType=VARCHAR} and is_deleted = 0
+    </select>
 </mapper>

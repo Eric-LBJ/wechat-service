@@ -30,4 +30,9 @@ public class ChatCode {
      */
     public static final AiCode ADD_FRIEND_REQUEST_ALREADY_EXIST = new AiCode(500401, "You've already sent the user a friend request", "您已经向该用户发送过好友请求了，请耐心等待");;
     public static final AiCode OPERATOR_FAILURE = new AiCode(500402, "Operator failure", "操作失败");
+
+    /**
+     * chatMsg : 500800-501200
+     */
+    public static final AiCode CHAT_MESSAGE_NOT_EXIST = new AiCode(500800, "The chat message does not exist，can not update", "该消息不存在，无法进行修改操作");;
 }
