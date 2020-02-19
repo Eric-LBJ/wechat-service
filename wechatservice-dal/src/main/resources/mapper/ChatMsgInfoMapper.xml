@@ -13,7 +13,7 @@
     </resultMap>
 
     <sql id="columns">
-      chat_msg_info (id, gmt_create, gmt_modified, send_user_id, accept_user_id, msg, sign_flag, is_deleted
+      id, gmt_create, gmt_modified, send_user_id, accept_user_id, msg, sign_flag, is_deleted
     </sql>
 
     <insert id="insert" parameterType="com.corereach.communication.dal.domain.ChatMsgInfo">

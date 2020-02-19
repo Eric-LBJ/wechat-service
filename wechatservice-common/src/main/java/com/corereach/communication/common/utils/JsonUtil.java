@@ -65,5 +65,10 @@ public class JsonUtil {
     	
     	return null;
     }
+
+    public static void main(String[] args) {
+        String s = "：{\"action\":2,\"ChatMessage\":{\"senderId\":\"200118CHNX46H9S8\",\"receiverId\":\"5e462c0bd2dec1d48c93d422\",\"message\":\"Yyy\",\"messageId\":null},\"extand\":null}";
+//        jsonToPojo(s,)
+    }
     
 }

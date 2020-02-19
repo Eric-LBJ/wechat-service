@@ -47,6 +47,7 @@ public class WebSocketChatHandler extends SimpleChannelInboundHandler<TextWebSoc
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) {
         /*1、拿到从客户端发送过来的消息*/
         String text = msg.text();
+        log.info("收到前端数据：{}",text);
         DataContent dataContent = JsonUtil.jsonToPojo(text, DataContent.class);
         if (!ObjectUtils.isEmpty(dataContent)) {
             Integer action = dataContent.getAction();
