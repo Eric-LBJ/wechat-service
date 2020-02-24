@@ -1,5 +1,7 @@
 package com.corereach.communication.netty.initializer;
 
+import com.corereach.communication.common.comm.Constants;
+import com.corereach.communication.netty.handler.HeartBeatHandler;
 import com.corereach.communication.netty.handler.WebSocketChatHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -8,6 +10,7 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,6 +30,9 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
     @Resource
     private WebSocketChatHandler webSocketChatHandler;
 
+    @Resource
+    private HeartBeatHandler heartBeatHandler;
+
     @Value("${spring.webSocket.path}")
     private String webSocketPath;
 
@@ -36,6 +42,17 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
     @Override
     protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
+
+        /**
+         * 针对客户端，如果一分钟没有向服务器发送读写心跳（ALL），则主动断开连接
+         * 如果是读空闲或者写空闲，则不做处理
+         */
+        pipeline.addLast(new IdleStateHandler(Constants.READER_IDLE_TIME_SECONDS, Constants.WRITER_IDLE_TIME_SECONDS, Constants.ALL_IDLE_TIME_SECONDS));
+        /**自定义的空闲状态监测*/
+        pipeline.addLast(heartBeatHandler);
+
+        /*===========================以上处理器用于心跳监测===============================*/
+
         /*webSocket是基于http协议的，所以需要有http的编解码器*/
         pipeline.addLast(new HttpServerCodec());
         /*netty内置的对写大数据流的处理器*/
@@ -56,6 +73,8 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         pipeline.addLast(new WebSocketServerProtocolHandler(webSocketPath));
         /*自定义处理器*/
         pipeline.addLast(webSocketChatHandler);
+
+        /*===========================以上处理器用于支持webSocket协议===============================*/
     }
 
 }

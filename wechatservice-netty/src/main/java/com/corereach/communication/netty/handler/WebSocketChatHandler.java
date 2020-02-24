@@ -3,10 +3,10 @@ package com.corereach.communication.netty.handler;
 import com.corereach.communication.common.comm.Constants;
 import com.corereach.communication.common.domain.ChatMsgInfoDTO;
 import com.corereach.communication.common.utils.JsonUtil;
-import com.corereach.communication.component.ChatMsgInfoComponent;
 import com.corereach.communication.netty.comm.UserChannelRel;
 import com.corereach.communication.netty.domain.ChatMessage;
 import com.corereach.communication.netty.domain.DataContent;
+import com.corereach.communication.sal.ChatMsgInfoServiceClient;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,12 +36,12 @@ import java.util.List;
 public class WebSocketChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
     @Resource
-    private ChatMsgInfoComponent chatMsgInfoComponent;
+    private ChatMsgInfoServiceClient chatMsgInfoServiceClient;
 
     /**
      * 用于记录和管理所有客户端的channel
      */
-    private static ChannelGroup users = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    public static ChannelGroup users = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) {
@@ -69,7 +69,7 @@ public class WebSocketChatHandler extends SimpleChannelInboundHandler<TextWebSoc
                 /**2.2  聊天类型的消息，把聊天记录保存到数据库，同时标记消息的签收状态[未签收]*/
                 ChatMessage chatMessage = dataContent.getChatMessage();
                 ChatMsgInfoDTO chatMsgInfoDTO = packChatMsgInfoDTO(chatMessage);
-                String messageId = chatMsgInfoComponent.insert(chatMsgInfoDTO);
+                String messageId = chatMsgInfoServiceClient.insert(chatMsgInfoDTO);
                 chatMessage.setMessageId(messageId);
                 DataContent data = new DataContent();
                 data.setChatMessage(chatMessage);
@@ -91,15 +91,16 @@ public class WebSocketChatHandler extends SimpleChannelInboundHandler<TextWebSoc
                         messageIdList.add(s);
                     }
                 }
+                log.info("messageIdList:{}",messageIdList.toString());
                 if (!ObjectUtils.isEmpty(messageIdList) && messageIdList.size() > 0) {
-                    Boolean isUpdated = chatMsgInfoComponent.updateChatMsgInfoToSignedByMessageId(messageIdList);
+                    chatMsgInfoServiceClient.updateChatMsgInfoToSignedByMessageId(messageIdList);
                 }
             } else if (Constants.MESSAGE_ACTION_OF_KEEPALIVE.equals(action)) {
                 /**2.4  心跳类型的消息*/
-                System.out.println("收到来自channel为[" + currentChannel + "]的心跳包...");
                 log.info("收到来自channel为{}的心跳包...",currentChannel);
-            } else if (Constants.MESSAGE_ACTION_OF_PULL_FRIEND.equals(action)) {
-                /***/
+//                DataContent response = new DataContent();
+//                response.setAction(Constants.MESSAGE_ACTION_OF_KEEPALIVE);
+//                ctx.channel().writeAndFlush(new TextWebSocketFrame(JsonUtil.objectToJson(response)));
             }
 
         }

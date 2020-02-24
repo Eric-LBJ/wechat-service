@@ -99,5 +99,17 @@ public class Constants {
      * 发送消息的动作枚举:5-拉取好友
      */
     public static final Integer MESSAGE_ACTION_OF_PULL_FRIEND = 5;
+    /**
+     * 读操作心跳监测空闲时间
+     */
+    public static final Integer READER_IDLE_TIME_SECONDS = 20;
+    /**
+     * 写操作心跳监测空闲时间
+     */
+    public static final Integer WRITER_IDLE_TIME_SECONDS = 40;
+    /**
+     * 读写操作心跳监测空闲时间
+     */
+    public static final Integer ALL_IDLE_TIME_SECONDS = 60;
 
 }

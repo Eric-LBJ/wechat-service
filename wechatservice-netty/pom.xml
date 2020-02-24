@@ -36,7 +36,7 @@
 
         <dependency>
             <groupId>com.corereach.communication</groupId>
-            <artifactId>wechatservice-component</artifactId>
+            <artifactId>wechatservice-sal</artifactId>
         </dependency>
 
         <!-- netty -->

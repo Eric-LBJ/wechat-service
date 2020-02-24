@@ -23,6 +23,11 @@
 
         <dependency>
             <groupId>com.corereach.communication</groupId>
+            <artifactId>wechatservice-netty</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.corereach.communication</groupId>
             <artifactId>wechatservice-dal</artifactId>
         </dependency>
 

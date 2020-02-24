@@ -6,14 +6,19 @@ import com.corereach.communication.common.comm.Constants;
 import com.corereach.communication.common.domain.MyFriendsInfoDTO;
 import com.corereach.communication.common.domain.UserInfoDTO;
 import com.corereach.communication.common.utils.ConvertUtil;
+import com.corereach.communication.common.utils.JsonUtil;
 import com.corereach.communication.component.FriendsRequestInfoComponent;
 import com.corereach.communication.component.MyFriendsInfoComponent;
 import com.corereach.communication.component.UserInfoComponent;
 import com.corereach.communication.dal.domain.FriendsRequestInfo;
 import com.corereach.communication.dal.domain.UserInfo;
 import com.corereach.communication.dal.mapper.FriendsRequestInfoMapper;
+import com.corereach.communication.netty.comm.UserChannelRel;
+import com.corereach.communication.netty.domain.DataContent;
 import com.icode.rich.comm.ServiceSupport;
 import com.icode.rich.exception.AiException;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,6 +105,7 @@ public class FriendsRequestInfoComponentImpl extends ServiceSupport implements F
              * 如果通过好友请求：
              * 1、向myFriends表插入两条数据，互为好友
              * 2、删除好友请求数据
+             * 3、通过webSocket对请求者的好友列表进行更新操作
              */
             Boolean insertFirst = myFriendsInfoComponent.insert(packageMyFriendInfo(sendUserId, acceptUserId));
             Boolean insertSecond = myFriendsInfoComponent.insert(packageMyFriendInfo(acceptUserId, sendUserId));
@@ -107,6 +113,14 @@ public class FriendsRequestInfoComponentImpl extends ServiceSupport implements F
             if (insertFirst && insertSecond && isDeleted > 0) {
                 result = Boolean.TRUE;
             }
+
+            Channel channel = UserChannelRel.get(sendUserId);
+            if (!ObjectUtils.isEmpty(channel)){
+                DataContent dataContent = new DataContent();
+                dataContent.setAction(Constants.MESSAGE_ACTION_OF_PULL_FRIEND);
+                channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.objectToJson(dataContent)));
+            }
+
         } else if (Constants.OPERATOR_TYPE_OF_IGNORE.equals(operatorType)) {
             /**
              * 如果忽略好友请求，直接将好友请求数据删除
